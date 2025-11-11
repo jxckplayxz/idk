@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>s_xmate4 GitHub Control</title>
+  <meta charset="utf-8">
+  <style>
+    :root { --bg: #0a0a0a; --card: #1a1a1a; --red: #ff3333; --green: #33ff33; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:#fff; font-family: 'Segoe UI', sans-serif; padding:20px; }
+    .card { max-width:420px; margin:40px auto; background:var(--card); padding:28px; border-radius:18px; box-shadow:0 12px 40px rgba(0,0,0,0.7); }
+    h1 { text-align:center; color:var(--red); margin-bottom:20px; font-size:24px; }
+    input { width:100%; padding:14px; background:#222; border:none; border-radius:10px; color:#fff; font-size:16px; margin-bottom:12px; }
+    button { width:100%; padding:14px; background:var(--red); border:none; border-radius:10px; color:#fff; font-weight:bold; font-size:16px; cursor:pointer; margin:6px 0; transition:0.3s; }
+    button:hover { background:#ff1111; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+    .grid button { background:#333; }
+    .grid button:hover { background:#555; }
+    .status { text-align:center; margin-top:15px; color:var(--green); font-size:14px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>s_xmate4 GITHUB</h1>
+    <input type="text" id="msg" placeholder="Global message..." />
+    <button onclick="sendMsg()">SEND MESSAGE</button>
+
+    <div class="grid">
+      <button onclick="sendFx('shake')">SHAKE</button>
+      <button onclick="sendFx('confetti')">CONFETTI</button>
+      <button onclick="sendFx('scare')">SCARE</button>
+      <button onclick="sendFx('flash')">FLASH</button>
+    </div>
+
+    <div class="status" id="status">Ready.</div>
+  </div>
+
+  <script>
+    async function send(data) {
+      const res = await fetch("/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
+      document.getElementById("status").innerText = json.status === "sent" ? "Sent!" : "Error!";
+      setTimeout(() => document.getElementById("status").innerText = "Ready.", 2000);
+    }
+
+    function sendMsg() {
+      const text = document.getElementById("msg").value.trim();
+      if (!text) return;
+      send({ type: "message", text: text });
+      document.getElementById("msg").value = "";
+    }
+
+    function sendFx(effect) {
+      send({ type: "effect", effect: effect });
+    }
+  </script>
+</body>
+</html>
